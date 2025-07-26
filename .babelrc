@@ -5,7 +5,13 @@
   ],
   "plugins": [
     ["@babel/plugin-transform-class-properties"],
-    ["@babel/plugin-proposal-export-default-from"]
+    ["@babel/plugin-proposal-export-default-from"],
+    ["transform-imports", {
+      "date-fns": {
+        "transform": "date-fns/${member}",
+        "preventFullImport": true
+      }
+    }]
   ]
 }
  

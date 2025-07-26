@@ -1,9 +1,6 @@
-"use strict";
-
-var _Calendar = _interopRequireDefault(require("../Calendar"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+import Calendar from '../Calendar';
 describe('Calendar', () => {
   test('Should resolve', () => {
-    expect(_Calendar.default).toEqual(expect.anything());
+    expect(Calendar).toEqual(expect.anything());
   });
 });

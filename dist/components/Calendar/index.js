@@ -1,47 +1,38 @@
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _react = _interopRequireWildcard(require("react"));
-var _propTypes = _interopRequireDefault(require("prop-types"));
-var _DayCell = require("../DayCell");
-var _Month = _interopRequireDefault(require("../Month"));
-var _DateInput = _interopRequireDefault(require("../DateInput"));
-var _utils = require("../../utils");
-var _classnames = _interopRequireDefault(require("classnames"));
-var _reactList = _interopRequireDefault(require("react-list"));
-var _shallowEqual = require("shallow-equal");
-var _addMonths = _interopRequireDefault(require("date-fns/addMonths"));
-var _subMonths = _interopRequireDefault(require("date-fns/subMonths"));
-var _format = _interopRequireDefault(require("date-fns/format"));
-var _eachDayOfInterval = _interopRequireDefault(require("date-fns/eachDayOfInterval"));
-var _startOfWeek = _interopRequireDefault(require("date-fns/startOfWeek"));
-var _endOfWeek = _interopRequireDefault(require("date-fns/endOfWeek"));
-var _isSameDay = _interopRequireDefault(require("date-fns/isSameDay"));
-var _addYears = _interopRequireDefault(require("date-fns/addYears"));
-var _setYear = _interopRequireDefault(require("date-fns/setYear"));
-var _setMonth = _interopRequireDefault(require("date-fns/setMonth"));
-var _differenceInCalendarMonths = _interopRequireDefault(require("date-fns/differenceInCalendarMonths"));
-var _startOfMonth = _interopRequireDefault(require("date-fns/startOfMonth"));
-var _endOfMonth = _interopRequireDefault(require("date-fns/endOfMonth"));
-var _addDays = _interopRequireDefault(require("date-fns/addDays"));
-var _isSameMonth = _interopRequireDefault(require("date-fns/isSameMonth"));
-var _differenceInDays = _interopRequireDefault(require("date-fns/differenceInDays"));
-var _min = _interopRequireDefault(require("date-fns/min"));
-var _max = _interopRequireDefault(require("date-fns/max"));
-var _enUS = require("date-fns/locale/en-US");
-var _styles = _interopRequireDefault(require("../../styles"));
-var _accessibility = require("../../accessibility");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : String(i); }
 function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-class Calendar extends _react.PureComponent {
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+import { rangeShape } from '../DayCell';
+import Month from '../Month';
+import DateInput from '../DateInput';
+import { calcFocusDate, generateStyles, getMonthDisplayRange } from '../../utils';
+import classnames from 'classnames';
+import ReactList from 'react-list';
+import { shallowEqualObjects } from 'shallow-equal';
+import addMonths from "date-fns/addMonths";
+import subMonths from "date-fns/subMonths";
+import format from "date-fns/format";
+import eachDayOfInterval from "date-fns/eachDayOfInterval";
+import startOfWeek from "date-fns/startOfWeek";
+import endOfWeek from "date-fns/endOfWeek";
+import isSameDay from "date-fns/isSameDay";
+import addYears from "date-fns/addYears";
+import setYear from "date-fns/setYear";
+import setMonth from "date-fns/setMonth";
+import differenceInCalendarMonths from "date-fns/differenceInCalendarMonths";
+import startOfMonth from "date-fns/startOfMonth";
+import endOfMonth from "date-fns/endOfMonth";
+import addDays from "date-fns/addDays";
+import isSameMonth from "date-fns/isSameMonth";
+import differenceInDays from "date-fns/differenceInDays";
+import min from "date-fns/min";
+import max from "date-fns/max";
+import { enUS as defaultLocale } from 'date-fns/locale/en-US';
+import coreStyles from '../../styles';
+import { ariaLabelsShape } from '../../accessibility';
+class Calendar extends PureComponent {
   constructor(_props, context) {
     var _this;
     super(_props, context);
@@ -51,7 +42,7 @@ class Calendar extends _react.PureComponent {
       let preventUnnecessary = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
       if (!props.scroll.enabled) {
         if (preventUnnecessary && props.preventSnapRefocus) {
-          const focusedDateDiff = (0, _differenceInCalendarMonths.default)(date, _this.state.focusedDate);
+          const focusedDateDiff = differenceInCalendarMonths(date, _this.state.focusedDate);
           const isAllowedForward = props.calendarFocus === 'forwards' && focusedDateDiff >= 0;
           const isAllowedBackward = props.calendarFocus === 'backwards' && focusedDateDiff <= 0;
           if ((isAllowedForward || isAllowedBackward) && Math.abs(focusedDateDiff) < props.months) {
@@ -63,7 +54,7 @@ class Calendar extends _react.PureComponent {
         });
         return;
       }
-      const targetMonthIndex = (0, _differenceInCalendarMonths.default)(date, props.minDate, _this.dateOptions);
+      const targetMonthIndex = differenceInCalendarMonths(date, props.minDate, _this.dateOptions);
       const visibleMonths = _this.list.getVisibleRange();
       if (preventUnnecessary && visibleMonths.includes(targetMonthIndex)) return;
       _this.isFirstRender = true;
@@ -78,7 +69,7 @@ class Calendar extends _react.PureComponent {
         ...props,
         months: _this.list.getVisibleRange().length
       } : props;
-      const newFocus = (0, _utils.calcFocusDate)(_this.state.focusedDate, newProps);
+      const newFocus = calcFocusDate(_this.state.focusedDate, newProps);
       _this.focusToDate(newFocus, newProps);
     });
     _defineProperty(this, "updatePreview", val => {
@@ -108,12 +99,12 @@ class Calendar extends _react.PureComponent {
         maxDate
       } = _this.props;
       const modeMapper = {
-        monthOffset: () => (0, _addMonths.default)(focusedDate, value),
-        setMonth: () => (0, _setMonth.default)(focusedDate, value),
-        setYear: () => (0, _setYear.default)(focusedDate, value),
+        monthOffset: () => addMonths(focusedDate, value),
+        setMonth: () => setMonth(focusedDate, value),
+        setYear: () => setYear(focusedDate, value),
         set: () => value
       };
-      const newDate = (0, _min.default)([(0, _max.default)([modeMapper[mode](), minDate]), maxDate]);
+      const newDate = min([max([modeMapper[mode](), minDate]), maxDate]);
       _this.focusToDate(newDate, _this.props, false);
       onShownDateChange && onShownDateChange(newDate);
     });
@@ -134,8 +125,8 @@ class Calendar extends _react.PureComponent {
       const visibleMonths = this.list.getVisibleRange();
       // prevent scroll jump with wrong visible value
       if (visibleMonths[0] === undefined) return;
-      const visibleMonth = (0, _addMonths.default)(minDate, visibleMonths[0] || 0);
-      const isFocusedToDifferent = !(0, _isSameMonth.default)(visibleMonth, focusedDate);
+      const visibleMonth = addMonths(minDate, visibleMonths[0] || 0);
+      const isFocusedToDifferent = !isSameMonth(visibleMonth, focusedDate);
       if (isFocusedToDifferent && !isFirstRender) {
         this.setState({
           focusedDate: visibleMonth
@@ -155,47 +146,47 @@ class Calendar extends _react.PureComponent {
       const upperYearLimit = (maxDate || Calendar.defaultProps.maxDate).getFullYear();
       const lowerYearLimit = (minDate || Calendar.defaultProps.minDate).getFullYear();
       const styles = this.styles;
-      return /*#__PURE__*/_react.default.createElement("div", {
+      return /*#__PURE__*/React.createElement("div", {
         onMouseUp: e => e.stopPropagation(),
         className: styles.monthAndYearWrapper
-      }, showMonthArrow ? /*#__PURE__*/_react.default.createElement("button", {
+      }, showMonthArrow ? /*#__PURE__*/React.createElement("button", {
         type: "button",
-        className: (0, _classnames.default)(styles.nextPrevButton, styles.prevButton),
+        className: classnames(styles.nextPrevButton, styles.prevButton),
         onClick: () => changeShownDate(-1, 'monthOffset'),
         "aria-label": ariaLabels.prevButton
-      }, /*#__PURE__*/_react.default.createElement("i", null)) : null, showMonthAndYearPickers ? /*#__PURE__*/_react.default.createElement("span", {
+      }, /*#__PURE__*/React.createElement("i", null)) : null, showMonthAndYearPickers ? /*#__PURE__*/React.createElement("span", {
         className: styles.monthAndYearPickers
-      }, /*#__PURE__*/_react.default.createElement("span", {
+      }, /*#__PURE__*/React.createElement("span", {
         className: styles.monthPicker
-      }, /*#__PURE__*/_react.default.createElement("select", {
+      }, /*#__PURE__*/React.createElement("select", {
         value: focusedDate.getMonth(),
         onChange: e => changeShownDate(e.target.value, 'setMonth'),
         "aria-label": ariaLabels.monthPicker
-      }, this.state.monthNames.map((monthName, i) => /*#__PURE__*/_react.default.createElement("option", {
+      }, this.state.monthNames.map((monthName, i) => /*#__PURE__*/React.createElement("option", {
         key: i,
         value: i
-      }, monthName)))), /*#__PURE__*/_react.default.createElement("span", {
+      }, monthName)))), /*#__PURE__*/React.createElement("span", {
         className: styles.monthAndYearDivider
-      }), /*#__PURE__*/_react.default.createElement("span", {
+      }), /*#__PURE__*/React.createElement("span", {
         className: styles.yearPicker
-      }, /*#__PURE__*/_react.default.createElement("select", {
+      }, /*#__PURE__*/React.createElement("select", {
         value: focusedDate.getFullYear(),
         onChange: e => changeShownDate(e.target.value, 'setYear'),
         "aria-label": ariaLabels.yearPicker
       }, new Array(upperYearLimit - lowerYearLimit + 1).fill(upperYearLimit).map((val, i) => {
         const year = val - i;
-        return /*#__PURE__*/_react.default.createElement("option", {
+        return /*#__PURE__*/React.createElement("option", {
           key: year,
           value: year
         }, year);
-      })))) : /*#__PURE__*/_react.default.createElement("span", {
+      })))) : /*#__PURE__*/React.createElement("span", {
         className: styles.monthAndYearPickers
-      }, this.state.monthNames[focusedDate.getMonth()], " ", focusedDate.getFullYear()), showMonthArrow ? /*#__PURE__*/_react.default.createElement("button", {
+      }, this.state.monthNames[focusedDate.getMonth()], " ", focusedDate.getFullYear()), showMonthArrow ? /*#__PURE__*/React.createElement("button", {
         type: "button",
-        className: (0, _classnames.default)(styles.nextPrevButton, styles.nextButton),
+        className: classnames(styles.nextPrevButton, styles.nextButton),
         onClick: () => changeShownDate(+1, 'monthOffset'),
         "aria-label": ariaLabels.nextButton
-      }, /*#__PURE__*/_react.default.createElement("i", null)) : null);
+      }, /*#__PURE__*/React.createElement("i", null)) : null);
     });
     _defineProperty(this, "renderDateDisplay", () => {
       const {
@@ -211,18 +202,18 @@ class Calendar extends _react.PureComponent {
       } = this.props;
       const defaultColor = rangeColors[focusedRange[0]] || color;
       const styles = this.styles;
-      return /*#__PURE__*/_react.default.createElement("div", {
+      return /*#__PURE__*/React.createElement("div", {
         className: styles.dateDisplayWrapper
       }, ranges.map((range, i) => {
         if (range.showDateDisplay === false || range.disabled && !range.showDateDisplay) return null;
-        return /*#__PURE__*/_react.default.createElement("div", {
+        return /*#__PURE__*/React.createElement("div", {
           className: styles.dateDisplay,
           key: i,
           style: {
             color: range.color || defaultColor
           }
-        }, /*#__PURE__*/_react.default.createElement(_DateInput.default, {
-          className: (0, _classnames.default)(styles.dateDisplayItem, {
+        }, /*#__PURE__*/React.createElement(DateInput, {
+          className: classnames(styles.dateDisplayItem, {
             [styles.dateDisplayItemActive]: focusedRange[0] === i && focusedRange[1] === 0
           }),
           readOnly: !editableDateInputs,
@@ -234,8 +225,8 @@ class Calendar extends _react.PureComponent {
           ariaLabel: ariaLabels.dateInput && ariaLabels.dateInput[range.key] && ariaLabels.dateInput[range.key].startDate,
           onChange: this.onDragSelectionEnd,
           onFocus: () => this.handleRangeFocusChange(i, 0)
-        }), /*#__PURE__*/_react.default.createElement(_DateInput.default, {
-          className: (0, _classnames.default)(styles.dateDisplayItem, {
+        }), /*#__PURE__*/React.createElement(DateInput, {
+          className: classnames(styles.dateDisplayItem, {
             [styles.dateDisplayItemActive]: focusedRange[0] === i && focusedRange[1] === 1
           }),
           readOnly: !editableDateInputs,
@@ -286,7 +277,7 @@ class Calendar extends _react.PureComponent {
         startDate: this.state.drag.range.startDate,
         endDate: date
       };
-      if (displayMode !== 'dateRange' || (0, _isSameDay.default)(newRange.startDate, date)) {
+      if (displayMode !== 'dateRange' || isSameDay(newRange.startDate, date)) {
         this.setState({
           drag: {
             status: false,
@@ -333,24 +324,24 @@ class Calendar extends _react.PureComponent {
         if (cache[index]) return cache[index];
       }
       if (direction === 'horizontal') return scrollArea.monthWidth;
-      const monthStep = (0, _addMonths.default)(minDate, index);
+      const monthStep = addMonths(minDate, index);
       const {
         start,
         end
-      } = (0, _utils.getMonthDisplayRange)(monthStep, this.dateOptions);
-      const isLongMonth = (0, _differenceInDays.default)(end, start, this.dateOptions) + 1 > 7 * 5;
+      } = getMonthDisplayRange(monthStep, this.dateOptions);
+      const isLongMonth = differenceInDays(end, start, this.dateOptions) + 1 > 7 * 5;
       return isLongMonth ? scrollArea.longMonthHeight : scrollArea.monthHeight;
     });
     this.dateOptions = {
       locale: _props.locale
     };
     if (_props.weekStartsOn !== undefined) this.dateOptions.weekStartsOn = _props.weekStartsOn;
-    this.styles = (0, _utils.generateStyles)([_styles.default, _props.classNames]);
+    this.styles = generateStyles([coreStyles, _props.classNames]);
     this.listSizeCache = {};
     this.isFirstRender = true;
     this.state = {
       monthNames: this.getMonthNames(),
-      focusedDate: (0, _utils.calcFocusDate)(null, _props),
+      focusedDate: calcFocusDate(null, _props),
       drag: {
         status: false,
         range: {
@@ -416,7 +407,7 @@ class Calendar extends _react.PureComponent {
         monthNames: this.getMonthNames()
       });
     }
-    if (!(0, _shallowEqual.shallowEqualObjects)(prevProps.scroll, this.props.scroll)) {
+    if (!shallowEqualObjects(prevProps.scroll, this.props.scroll)) {
       this.setState({
         scrollArea: this.calcScrollArea(this.props)
       });
@@ -424,15 +415,15 @@ class Calendar extends _react.PureComponent {
   }
   renderWeekdays() {
     const now = new Date();
-    return /*#__PURE__*/_react.default.createElement("div", {
+    return /*#__PURE__*/React.createElement("div", {
       className: this.styles.weekDays
-    }, (0, _eachDayOfInterval.default)({
-      start: (0, _startOfWeek.default)(now, this.dateOptions),
-      end: (0, _endOfWeek.default)(now, this.dateOptions)
-    }).map((day, i) => /*#__PURE__*/_react.default.createElement("span", {
+    }, eachDayOfInterval({
+      start: startOfWeek(now, this.dateOptions),
+      end: endOfWeek(now, this.dateOptions)
+    }).map((day, i) => /*#__PURE__*/React.createElement("span", {
       className: this.styles.weekDay,
       key: i
-    }, (0, _format.default)(day, this.props.weekdayDisplayFormat, this.dateOptions))));
+    }, format(day, this.props.weekdayDisplayFormat, this.dateOptions))));
   }
   render() {
     const {
@@ -460,8 +451,8 @@ class Calendar extends _react.PureComponent {
       ...range,
       color: range.color || rangeColors[i] || color
     }));
-    return /*#__PURE__*/_react.default.createElement("div", {
-      className: (0, _classnames.default)(this.styles.calendarWrapper, className),
+    return /*#__PURE__*/React.createElement("div", {
+      className: classnames(this.styles.calendarWrapper, className),
       onMouseUp: () => this.setState({
         drag: {
           status: false,
@@ -476,24 +467,24 @@ class Calendar extends _react.PureComponent {
           }
         });
       }
-    }, showDateDisplay && this.renderDateDisplay(), monthAndYearRenderer(focusedDate, this.changeShownDate, this.props), scroll.enabled ? /*#__PURE__*/_react.default.createElement("div", null, isVertical && this.renderWeekdays(this.dateOptions), /*#__PURE__*/_react.default.createElement("div", {
-      className: (0, _classnames.default)(this.styles.infiniteMonths, isVertical ? this.styles.monthsVertical : this.styles.monthsHorizontal),
+    }, showDateDisplay && this.renderDateDisplay(), monthAndYearRenderer(focusedDate, this.changeShownDate, this.props), scroll.enabled ? /*#__PURE__*/React.createElement("div", null, isVertical && this.renderWeekdays(this.dateOptions), /*#__PURE__*/React.createElement("div", {
+      className: classnames(this.styles.infiniteMonths, isVertical ? this.styles.monthsVertical : this.styles.monthsHorizontal),
       onMouseLeave: () => onPreviewChange && onPreviewChange(),
       style: {
         width: scrollArea.calendarWidth + 11,
         height: scrollArea.calendarHeight + 11
       },
       onScroll: this.handleScroll
-    }, /*#__PURE__*/_react.default.createElement(_reactList.default, {
-      length: (0, _differenceInCalendarMonths.default)((0, _endOfMonth.default)(maxDate), (0, _addDays.default)((0, _startOfMonth.default)(minDate), -1), this.dateOptions),
+    }, /*#__PURE__*/React.createElement(ReactList, {
+      length: differenceInCalendarMonths(endOfMonth(maxDate), addDays(startOfMonth(minDate), -1), this.dateOptions),
       treshold: 500,
       type: "variable",
       ref: target => this.list = target,
       itemSizeEstimator: this.estimateMonthSize,
       axis: isVertical ? 'y' : 'x',
       itemRenderer: (index, key) => {
-        const monthStep = (0, _addMonths.default)(minDate, index);
-        return /*#__PURE__*/_react.default.createElement(_Month.default, _extends({}, this.props, {
+        const monthStep = addMonths(minDate, index);
+        return /*#__PURE__*/React.createElement(Month, _extends({}, this.props, {
           onPreviewChange: onPreviewChange || this.updatePreview,
           preview: preview || this.state.preview,
           ranges: ranges,
@@ -518,14 +509,14 @@ class Calendar extends _react.PureComponent {
           showWeekDays: !isVertical
         }));
       }
-    }))) : /*#__PURE__*/_react.default.createElement("div", {
-      className: (0, _classnames.default)(this.styles.months, isVertical ? this.styles.monthsVertical : this.styles.monthsHorizontal)
+    }))) : /*#__PURE__*/React.createElement("div", {
+      className: classnames(this.styles.months, isVertical ? this.styles.monthsVertical : this.styles.monthsHorizontal)
     }, new Array(this.props.months).fill(null).map((_, i) => {
-      let monthStep = (0, _addMonths.default)(this.state.focusedDate, i);
+      let monthStep = addMonths(this.state.focusedDate, i);
       if (this.props.calendarFocus === 'backwards') {
-        monthStep = (0, _subMonths.default)(this.state.focusedDate, this.props.months - 1 - i);
+        monthStep = subMonths(this.state.focusedDate, this.props.months - 1 - i);
       }
-      return /*#__PURE__*/_react.default.createElement(_Month.default, _extends({}, this.props, {
+      return /*#__PURE__*/React.createElement(Month, _extends({}, this.props, {
         onPreviewChange: onPreviewChange || this.updatePreview,
         preview: preview || this.state.preview,
         ranges: ranges,
@@ -552,7 +543,7 @@ Calendar.defaultProps = {
   disabledDates: [],
   disabledDay: () => {},
   classNames: {},
-  locale: _enUS.enUS,
+  locale: defaultLocale,
   ranges: [],
   focusedRange: [0, 0],
   dateDisplayFormat: 'MMM d, yyyy',
@@ -568,8 +559,8 @@ Calendar.defaultProps = {
     enabled: false
   },
   direction: 'vertical',
-  maxDate: (0, _addYears.default)(new Date(), 20),
-  minDate: (0, _addYears.default)(new Date(), -100),
+  maxDate: addYears(new Date(), 20),
+  minDate: addYears(new Date(), -100),
   rangeColors: ['#3d91ff', '#3ecf8e', '#fed14c'],
   startDatePlaceholder: 'Early',
   endDatePlaceholder: 'Continuous',
@@ -581,58 +572,58 @@ Calendar.defaultProps = {
   ariaLabels: {}
 };
 Calendar.propTypes = {
-  showMonthArrow: _propTypes.default.bool,
-  showMonthAndYearPickers: _propTypes.default.bool,
-  disabledDates: _propTypes.default.array,
-  disabledDay: _propTypes.default.func,
-  minDate: _propTypes.default.object,
-  maxDate: _propTypes.default.object,
-  date: _propTypes.default.object,
-  onChange: _propTypes.default.func,
-  onPreviewChange: _propTypes.default.func,
-  onRangeFocusChange: _propTypes.default.func,
-  classNames: _propTypes.default.object,
-  locale: _propTypes.default.object,
-  shownDate: _propTypes.default.object,
-  onShownDateChange: _propTypes.default.func,
-  ranges: _propTypes.default.arrayOf(_DayCell.rangeShape),
-  preview: _propTypes.default.shape({
-    startDate: _propTypes.default.object,
-    endDate: _propTypes.default.object,
-    color: _propTypes.default.string
+  showMonthArrow: PropTypes.bool,
+  showMonthAndYearPickers: PropTypes.bool,
+  disabledDates: PropTypes.array,
+  disabledDay: PropTypes.func,
+  minDate: PropTypes.object,
+  maxDate: PropTypes.object,
+  date: PropTypes.object,
+  onChange: PropTypes.func,
+  onPreviewChange: PropTypes.func,
+  onRangeFocusChange: PropTypes.func,
+  classNames: PropTypes.object,
+  locale: PropTypes.object,
+  shownDate: PropTypes.object,
+  onShownDateChange: PropTypes.func,
+  ranges: PropTypes.arrayOf(rangeShape),
+  preview: PropTypes.shape({
+    startDate: PropTypes.object,
+    endDate: PropTypes.object,
+    color: PropTypes.string
   }),
-  dateDisplayFormat: _propTypes.default.string,
-  monthDisplayFormat: _propTypes.default.string,
-  weekdayDisplayFormat: _propTypes.default.string,
-  weekStartsOn: _propTypes.default.number,
-  dayDisplayFormat: _propTypes.default.string,
-  focusedRange: _propTypes.default.arrayOf(_propTypes.default.number),
-  initialFocusedRange: _propTypes.default.arrayOf(_propTypes.default.number),
-  months: _propTypes.default.number,
-  className: _propTypes.default.string,
-  showDateDisplay: _propTypes.default.bool,
-  showPreview: _propTypes.default.bool,
-  displayMode: _propTypes.default.oneOf(['dateRange', 'date']),
-  color: _propTypes.default.string,
-  updateRange: _propTypes.default.func,
-  scroll: _propTypes.default.shape({
-    enabled: _propTypes.default.bool,
-    monthHeight: _propTypes.default.number,
-    longMonthHeight: _propTypes.default.number,
-    monthWidth: _propTypes.default.number,
-    calendarWidth: _propTypes.default.number,
-    calendarHeight: _propTypes.default.number
+  dateDisplayFormat: PropTypes.string,
+  monthDisplayFormat: PropTypes.string,
+  weekdayDisplayFormat: PropTypes.string,
+  weekStartsOn: PropTypes.number,
+  dayDisplayFormat: PropTypes.string,
+  focusedRange: PropTypes.arrayOf(PropTypes.number),
+  initialFocusedRange: PropTypes.arrayOf(PropTypes.number),
+  months: PropTypes.number,
+  className: PropTypes.string,
+  showDateDisplay: PropTypes.bool,
+  showPreview: PropTypes.bool,
+  displayMode: PropTypes.oneOf(['dateRange', 'date']),
+  color: PropTypes.string,
+  updateRange: PropTypes.func,
+  scroll: PropTypes.shape({
+    enabled: PropTypes.bool,
+    monthHeight: PropTypes.number,
+    longMonthHeight: PropTypes.number,
+    monthWidth: PropTypes.number,
+    calendarWidth: PropTypes.number,
+    calendarHeight: PropTypes.number
   }),
-  direction: _propTypes.default.oneOf(['vertical', 'horizontal']),
-  startDatePlaceholder: _propTypes.default.string,
-  endDatePlaceholder: _propTypes.default.string,
-  navigatorRenderer: _propTypes.default.func,
-  rangeColors: _propTypes.default.arrayOf(_propTypes.default.string),
-  editableDateInputs: _propTypes.default.bool,
-  dragSelectionEnabled: _propTypes.default.bool,
-  fixedHeight: _propTypes.default.bool,
-  calendarFocus: _propTypes.default.string,
-  preventSnapRefocus: _propTypes.default.bool,
-  ariaLabels: _accessibility.ariaLabelsShape
+  direction: PropTypes.oneOf(['vertical', 'horizontal']),
+  startDatePlaceholder: PropTypes.string,
+  endDatePlaceholder: PropTypes.string,
+  navigatorRenderer: PropTypes.func,
+  rangeColors: PropTypes.arrayOf(PropTypes.string),
+  editableDateInputs: PropTypes.bool,
+  dragSelectionEnabled: PropTypes.bool,
+  fixedHeight: PropTypes.bool,
+  calendarFocus: PropTypes.string,
+  preventSnapRefocus: PropTypes.bool,
+  ariaLabels: ariaLabelsShape
 };
-var _default = exports.default = Calendar;
+export default Calendar;

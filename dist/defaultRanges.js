@@ -1,49 +1,41 @@
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.createStaticRanges = createStaticRanges;
-exports.defaultStaticRanges = exports.defaultInputRanges = void 0;
-var _addDays = _interopRequireDefault(require("date-fns/addDays"));
-var _endOfDay = _interopRequireDefault(require("date-fns/endOfDay"));
-var _startOfDay = _interopRequireDefault(require("date-fns/startOfDay"));
-var _startOfMonth = _interopRequireDefault(require("date-fns/startOfMonth"));
-var _endOfMonth = _interopRequireDefault(require("date-fns/endOfMonth"));
-var _addMonths = _interopRequireDefault(require("date-fns/addMonths"));
-var _startOfWeek = _interopRequireDefault(require("date-fns/startOfWeek"));
-var _endOfWeek = _interopRequireDefault(require("date-fns/endOfWeek"));
-var _isSameDay = _interopRequireDefault(require("date-fns/isSameDay"));
-var _differenceInCalendarDays = _interopRequireDefault(require("date-fns/differenceInCalendarDays"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+import addDays from "date-fns/addDays";
+import endOfDay from "date-fns/endOfDay";
+import startOfDay from "date-fns/startOfDay";
+import startOfMonth from "date-fns/startOfMonth";
+import endOfMonth from "date-fns/endOfMonth";
+import addMonths from "date-fns/addMonths";
+import startOfWeek from "date-fns/startOfWeek";
+import endOfWeek from "date-fns/endOfWeek";
+import isSameDay from "date-fns/isSameDay";
+import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
 const defineds = {
-  startOfWeek: (0, _startOfWeek.default)(new Date()),
-  endOfWeek: (0, _endOfWeek.default)(new Date()),
-  startOfLastWeek: (0, _startOfWeek.default)((0, _addDays.default)(new Date(), -7)),
-  endOfLastWeek: (0, _endOfWeek.default)((0, _addDays.default)(new Date(), -7)),
-  startOfToday: (0, _startOfDay.default)(new Date()),
-  endOfToday: (0, _endOfDay.default)(new Date()),
-  startOfYesterday: (0, _startOfDay.default)((0, _addDays.default)(new Date(), -1)),
-  endOfYesterday: (0, _endOfDay.default)((0, _addDays.default)(new Date(), -1)),
-  startOfMonth: (0, _startOfMonth.default)(new Date()),
-  endOfMonth: (0, _endOfMonth.default)(new Date()),
-  startOfLastMonth: (0, _startOfMonth.default)((0, _addMonths.default)(new Date(), -1)),
-  endOfLastMonth: (0, _endOfMonth.default)((0, _addMonths.default)(new Date(), -1))
+  startOfWeek: startOfWeek(new Date()),
+  endOfWeek: endOfWeek(new Date()),
+  startOfLastWeek: startOfWeek(addDays(new Date(), -7)),
+  endOfLastWeek: endOfWeek(addDays(new Date(), -7)),
+  startOfToday: startOfDay(new Date()),
+  endOfToday: endOfDay(new Date()),
+  startOfYesterday: startOfDay(addDays(new Date(), -1)),
+  endOfYesterday: endOfDay(addDays(new Date(), -1)),
+  startOfMonth: startOfMonth(new Date()),
+  endOfMonth: endOfMonth(new Date()),
+  startOfLastMonth: startOfMonth(addMonths(new Date(), -1)),
+  endOfLastMonth: endOfMonth(addMonths(new Date(), -1))
 };
 const staticRangeHandler = {
   range: {},
   isSelected(range) {
     const definedRange = this.range();
-    return (0, _isSameDay.default)(range.startDate, definedRange.startDate) && (0, _isSameDay.default)(range.endDate, definedRange.endDate);
+    return isSameDay(range.startDate, definedRange.startDate) && isSameDay(range.endDate, definedRange.endDate);
   }
 };
-function createStaticRanges(ranges) {
+export function createStaticRanges(ranges) {
   return ranges.map(range => ({
     ...staticRangeHandler,
     ...range
   }));
 }
-const defaultStaticRanges = exports.defaultStaticRanges = createStaticRanges([{
+export const defaultStaticRanges = createStaticRanges([{
   label: 'Today',
   range: () => ({
     startDate: defineds.startOfToday,
@@ -80,18 +72,18 @@ const defaultStaticRanges = exports.defaultStaticRanges = createStaticRanges([{
     endDate: defineds.endOfLastMonth
   })
 }]);
-const defaultInputRanges = exports.defaultInputRanges = [{
+export const defaultInputRanges = [{
   label: 'days up to today',
   range(value) {
     return {
-      startDate: (0, _addDays.default)(defineds.startOfToday, (Math.max(Number(value), 1) - 1) * -1),
+      startDate: addDays(defineds.startOfToday, (Math.max(Number(value), 1) - 1) * -1),
       endDate: defineds.endOfToday
     };
   },
   getCurrentValue(range) {
-    if (!(0, _isSameDay.default)(range.endDate, defineds.endOfToday)) return '-';
+    if (!isSameDay(range.endDate, defineds.endOfToday)) return '-';
     if (!range.startDate) return '∞';
-    return (0, _differenceInCalendarDays.default)(defineds.endOfToday, range.startDate) + 1;
+    return differenceInCalendarDays(defineds.endOfToday, range.startDate) + 1;
   }
 }, {
   label: 'days starting today',
@@ -99,12 +91,12 @@ const defaultInputRanges = exports.defaultInputRanges = [{
     const today = new Date();
     return {
       startDate: today,
-      endDate: (0, _addDays.default)(today, Math.max(Number(value), 1) - 1)
+      endDate: addDays(today, Math.max(Number(value), 1) - 1)
     };
   },
   getCurrentValue(range) {
-    if (!(0, _isSameDay.default)(range.startDate, defineds.startOfToday)) return '-';
+    if (!isSameDay(range.startDate, defineds.startOfToday)) return '-';
     if (!range.endDate) return '∞';
-    return (0, _differenceInCalendarDays.default)(range.endDate, defineds.startOfToday) + 1;
+    return differenceInCalendarDays(range.endDate, defineds.startOfToday) + 1;
   }
 }];

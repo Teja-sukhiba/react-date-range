@@ -1,26 +1,18 @@
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.rangeShape = exports.default = void 0;
-var _react = _interopRequireWildcard(require("react"));
-var _propTypes = _interopRequireDefault(require("prop-types"));
-var _classnames = _interopRequireDefault(require("classnames"));
-var _startOfDay = _interopRequireDefault(require("date-fns/startOfDay"));
-var _format = _interopRequireDefault(require("date-fns/format"));
-var _isSameDay = _interopRequireDefault(require("date-fns/isSameDay"));
-var _isAfter = _interopRequireDefault(require("date-fns/isAfter"));
-var _isBefore = _interopRequireDefault(require("date-fns/isBefore"));
-var _endOfDay = _interopRequireDefault(require("date-fns/endOfDay"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : String(i); }
-function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); } /* eslint-disable no-fallthrough */
-class DayCell extends _react.Component {
+function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+/* eslint-disable no-fallthrough */
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import classnames from 'classnames';
+import startOfDay from "date-fns/startOfDay";
+import format from "date-fns/format";
+import isSameDay from "date-fns/isSameDay";
+import isAfter from "date-fns/isAfter";
+import isBefore from "date-fns/isBefore";
+import endOfDay from "date-fns/endOfDay";
+class DayCell extends Component {
   constructor(props, context) {
     super(props, context);
     _defineProperty(this, "handleKeyEvent", event => {
@@ -86,7 +78,7 @@ class DayCell extends _react.Component {
         disabled,
         styles
       } = this.props;
-      return (0, _classnames.default)(styles.day, {
+      return classnames(styles.day, {
         [styles.dayPassive]: isPassive,
         [styles.dayDisabled]: disabled,
         [styles.dayToday]: isToday,
@@ -106,13 +98,13 @@ class DayCell extends _react.Component {
         styles
       } = this.props;
       if (!preview) return null;
-      const startDate = preview.startDate ? (0, _endOfDay.default)(preview.startDate) : null;
-      const endDate = preview.endDate ? (0, _startOfDay.default)(preview.endDate) : null;
-      const isInRange = (!startDate || (0, _isAfter.default)(day, startDate)) && (!endDate || (0, _isBefore.default)(day, endDate));
-      const isStartEdge = !isInRange && (0, _isSameDay.default)(day, startDate);
-      const isEndEdge = !isInRange && (0, _isSameDay.default)(day, endDate);
-      return /*#__PURE__*/_react.default.createElement("span", {
-        className: (0, _classnames.default)({
+      const startDate = preview.startDate ? endOfDay(preview.startDate) : null;
+      const endDate = preview.endDate ? startOfDay(preview.endDate) : null;
+      const isInRange = (!startDate || isAfter(day, startDate)) && (!endDate || isBefore(day, endDate));
+      const isStartEdge = !isInRange && isSameDay(day, startDate);
+      const isEndEdge = !isInRange && isSameDay(day, endDate);
+      return /*#__PURE__*/React.createElement("span", {
+        className: classnames({
           [styles.dayStartPreview]: isStartEdge,
           [styles.dayInPreview]: isInRange,
           [styles.dayEndPreview]: isEndEdge
@@ -129,8 +121,8 @@ class DayCell extends _react.Component {
         day
       } = this.props;
       if (this.props.displayMode === 'date') {
-        let isSelected = (0, _isSameDay.default)(this.props.day, this.props.date);
-        return isSelected ? /*#__PURE__*/_react.default.createElement("span", {
+        let isSelected = isSameDay(this.props.day, this.props.date);
+        return isSelected ? /*#__PURE__*/React.createElement("span", {
           className: styles.selected,
           style: {
             color: this.props.color
@@ -140,14 +132,14 @@ class DayCell extends _react.Component {
       const inRanges = ranges.reduce((result, range) => {
         let startDate = range.startDate;
         let endDate = range.endDate;
-        if (startDate && endDate && (0, _isBefore.default)(endDate, startDate)) {
+        if (startDate && endDate && isBefore(endDate, startDate)) {
           [startDate, endDate] = [endDate, startDate];
         }
-        startDate = startDate ? (0, _endOfDay.default)(startDate) : null;
-        endDate = endDate ? (0, _startOfDay.default)(endDate) : null;
-        const isInRange = (!startDate || (0, _isAfter.default)(day, startDate)) && (!endDate || (0, _isBefore.default)(day, endDate));
-        const isStartEdge = !isInRange && (0, _isSameDay.default)(day, startDate);
-        const isEndEdge = !isInRange && (0, _isSameDay.default)(day, endDate);
+        startDate = startDate ? endOfDay(startDate) : null;
+        endDate = endDate ? startOfDay(endDate) : null;
+        const isInRange = (!startDate || isAfter(day, startDate)) && (!endDate || isBefore(day, endDate));
+        const isStartEdge = !isInRange && isSameDay(day, startDate);
+        const isEndEdge = !isInRange && isSameDay(day, endDate);
         if (isInRange || isStartEdge || isEndEdge) {
           return [...result, {
             isStartEdge,
@@ -158,9 +150,9 @@ class DayCell extends _react.Component {
         }
         return result;
       }, []);
-      return inRanges.map((range, i) => /*#__PURE__*/_react.default.createElement("span", {
+      return inRanges.map((range, i) => /*#__PURE__*/React.createElement("span", {
         key: i,
-        className: (0, _classnames.default)({
+        className: classnames({
           [styles.startEdge]: range.isStartEdge,
           [styles.endEdge]: range.isEndEdge,
           [styles.inRange]: range.isInRange
@@ -179,7 +171,7 @@ class DayCell extends _react.Component {
     const {
       dayContentRenderer
     } = this.props;
-    return /*#__PURE__*/_react.default.createElement("button", _extends({
+    return /*#__PURE__*/React.createElement("button", _extends({
       type: "button",
       onMouseEnter: this.handleMouseEvent,
       onMouseLeave: this.handleMouseEvent,
@@ -197,47 +189,47 @@ class DayCell extends _react.Component {
       style: {
         color: this.props.color
       }
-    }), this.renderSelectionPlaceholders(), this.renderPreviewPlaceholder(), /*#__PURE__*/_react.default.createElement("span", {
+    }), this.renderSelectionPlaceholders(), this.renderPreviewPlaceholder(), /*#__PURE__*/React.createElement("span", {
       className: this.props.styles.dayNumber
-    }, dayContentRenderer?.(this.props.day) || /*#__PURE__*/_react.default.createElement("span", null, (0, _format.default)(this.props.day, this.props.dayDisplayFormat))));
+    }, dayContentRenderer?.(this.props.day) || /*#__PURE__*/React.createElement("span", null, format(this.props.day, this.props.dayDisplayFormat))));
   }
 }
 DayCell.defaultProps = {};
-const rangeShape = exports.rangeShape = _propTypes.default.shape({
-  startDate: _propTypes.default.object,
-  endDate: _propTypes.default.object,
-  color: _propTypes.default.string,
-  key: _propTypes.default.string,
-  autoFocus: _propTypes.default.bool,
-  disabled: _propTypes.default.bool,
-  showDateDisplay: _propTypes.default.bool
+export const rangeShape = PropTypes.shape({
+  startDate: PropTypes.object,
+  endDate: PropTypes.object,
+  color: PropTypes.string,
+  key: PropTypes.string,
+  autoFocus: PropTypes.bool,
+  disabled: PropTypes.bool,
+  showDateDisplay: PropTypes.bool
 });
 DayCell.propTypes = {
-  day: _propTypes.default.object.isRequired,
-  dayDisplayFormat: _propTypes.default.string,
-  date: _propTypes.default.object,
-  ranges: _propTypes.default.arrayOf(rangeShape),
-  preview: _propTypes.default.shape({
-    startDate: _propTypes.default.object,
-    endDate: _propTypes.default.object,
-    color: _propTypes.default.string
+  day: PropTypes.object.isRequired,
+  dayDisplayFormat: PropTypes.string,
+  date: PropTypes.object,
+  ranges: PropTypes.arrayOf(rangeShape),
+  preview: PropTypes.shape({
+    startDate: PropTypes.object,
+    endDate: PropTypes.object,
+    color: PropTypes.string
   }),
-  onPreviewChange: _propTypes.default.func,
-  previewColor: _propTypes.default.string,
-  disabled: _propTypes.default.bool,
-  isPassive: _propTypes.default.bool,
-  isToday: _propTypes.default.bool,
-  isWeekend: _propTypes.default.bool,
-  isStartOfWeek: _propTypes.default.bool,
-  isEndOfWeek: _propTypes.default.bool,
-  isStartOfMonth: _propTypes.default.bool,
-  isEndOfMonth: _propTypes.default.bool,
-  color: _propTypes.default.string,
-  displayMode: _propTypes.default.oneOf(['dateRange', 'date']),
-  styles: _propTypes.default.object,
-  onMouseDown: _propTypes.default.func,
-  onMouseUp: _propTypes.default.func,
-  onMouseEnter: _propTypes.default.func,
-  dayContentRenderer: _propTypes.default.func
+  onPreviewChange: PropTypes.func,
+  previewColor: PropTypes.string,
+  disabled: PropTypes.bool,
+  isPassive: PropTypes.bool,
+  isToday: PropTypes.bool,
+  isWeekend: PropTypes.bool,
+  isStartOfWeek: PropTypes.bool,
+  isEndOfWeek: PropTypes.bool,
+  isStartOfMonth: PropTypes.bool,
+  isEndOfMonth: PropTypes.bool,
+  color: PropTypes.string,
+  displayMode: PropTypes.oneOf(['dateRange', 'date']),
+  styles: PropTypes.object,
+  onMouseDown: PropTypes.func,
+  onMouseUp: PropTypes.func,
+  onMouseEnter: PropTypes.func,
+  dayContentRenderer: PropTypes.func
 };
-var _default = exports.default = DayCell;
+export default DayCell;

@@ -1,22 +1,12 @@
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.calcFocusDate = calcFocusDate;
-exports.findNextRangeIndex = findNextRangeIndex;
-exports.generateStyles = generateStyles;
-exports.getMonthDisplayRange = getMonthDisplayRange;
-var _classnames = _interopRequireDefault(require("classnames"));
-var _startOfMonth = _interopRequireDefault(require("date-fns/startOfMonth"));
-var _endOfMonth = _interopRequireDefault(require("date-fns/endOfMonth"));
-var _startOfWeek = _interopRequireDefault(require("date-fns/startOfWeek"));
-var _endOfWeek = _interopRequireDefault(require("date-fns/endOfWeek"));
-var _differenceInCalendarDays = _interopRequireDefault(require("date-fns/differenceInCalendarDays"));
-var _differenceInCalendarMonths = _interopRequireDefault(require("date-fns/differenceInCalendarMonths"));
-var _addDays = _interopRequireDefault(require("date-fns/addDays"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function calcFocusDate(currentFocusedDate, props) {
+import classnames from 'classnames';
+import startOfMonth from "date-fns/startOfMonth";
+import endOfMonth from "date-fns/endOfMonth";
+import startOfWeek from "date-fns/startOfWeek";
+import endOfWeek from "date-fns/endOfWeek";
+import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
+import differenceInCalendarMonths from "date-fns/differenceInCalendarMonths";
+import addDays from "date-fns/addDays";
+export function calcFocusDate(currentFocusedDate, props) {
   const {
     shownDate,
     date,
@@ -39,8 +29,8 @@ function calcFocusDate(currentFocusedDate, props) {
       end: date
     };
   }
-  targetInterval.start = (0, _startOfMonth.default)(targetInterval.start || new Date());
-  targetInterval.end = (0, _endOfMonth.default)(targetInterval.end || targetInterval.start);
+  targetInterval.start = startOfMonth(targetInterval.start || new Date());
+  targetInterval.end = endOfMonth(targetInterval.end || targetInterval.start);
   const targetDate = targetInterval.start || targetInterval.end || shownDate || new Date();
 
   // initial focus
@@ -48,25 +38,25 @@ function calcFocusDate(currentFocusedDate, props) {
 
   // // just return targetDate for native scrolled calendars
   // if (props.scroll.enabled) return targetDate;
-  if ((0, _differenceInCalendarMonths.default)(targetInterval.start, targetInterval.end) > months) {
+  if (differenceInCalendarMonths(targetInterval.start, targetInterval.end) > months) {
     // don't change focused if new selection in view area
     return currentFocusedDate;
   }
   return targetDate;
 }
-function findNextRangeIndex(ranges) {
+export function findNextRangeIndex(ranges) {
   let currentRangeIndex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : -1;
   const nextIndex = ranges.findIndex((range, i) => i > currentRangeIndex && range.autoFocus !== false && !range.disabled);
   if (nextIndex !== -1) return nextIndex;
   return ranges.findIndex(range => range.autoFocus !== false && !range.disabled);
 }
-function getMonthDisplayRange(date, dateOptions, fixedHeight) {
-  const startDateOfMonth = (0, _startOfMonth.default)(date, dateOptions);
-  const endDateOfMonth = (0, _endOfMonth.default)(date, dateOptions);
-  const startDateOfCalendar = (0, _startOfWeek.default)(startDateOfMonth, dateOptions);
-  let endDateOfCalendar = (0, _endOfWeek.default)(endDateOfMonth, dateOptions);
-  if (fixedHeight && (0, _differenceInCalendarDays.default)(endDateOfCalendar, startDateOfCalendar) <= 34) {
-    endDateOfCalendar = (0, _addDays.default)(endDateOfCalendar, 7);
+export function getMonthDisplayRange(date, dateOptions, fixedHeight) {
+  const startDateOfMonth = startOfMonth(date, dateOptions);
+  const endDateOfMonth = endOfMonth(date, dateOptions);
+  const startDateOfCalendar = startOfWeek(startDateOfMonth, dateOptions);
+  let endDateOfCalendar = endOfWeek(endDateOfMonth, dateOptions);
+  if (fixedHeight && differenceInCalendarDays(endDateOfCalendar, startDateOfCalendar) <= 34) {
+    endDateOfCalendar = addDays(endDateOfCalendar, 7);
   }
   return {
     start: startDateOfCalendar,
@@ -75,11 +65,11 @@ function getMonthDisplayRange(date, dateOptions, fixedHeight) {
     endDateOfMonth
   };
 }
-function generateStyles(sources) {
+export function generateStyles(sources) {
   if (!sources.length) return {};
   const generatedStyles = sources.filter(source => Boolean(source)).reduce((styles, styleSource) => {
     Object.keys(styleSource).forEach(key => {
-      styles[key] = (0, _classnames.default)(styles[key], styleSource[key]);
+      styles[key] = classnames(styles[key], styleSource[key]);
     });
     return styles;
   }, {});

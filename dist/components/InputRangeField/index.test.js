@@ -1,9 +1,6 @@
-"use strict";
-
-var _react = _interopRequireDefault(require("react"));
-var _enzyme = require("enzyme");
-var _InputRangeField = _interopRequireDefault(require("../InputRangeField"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+import React from 'react';
+import { mount } from 'enzyme';
+import InputRangeField from '../InputRangeField';
 const styles = {
   inputRange: 'range',
   inputRangeInput: 'input',
@@ -17,7 +14,7 @@ const toChangeEvent = value => ({
 describe('InputRangeField tests', () => {
   test('Should parse input value to number', () => {
     const onChange = jest.fn();
-    const wrapper = (0, _enzyme.mount)( /*#__PURE__*/_react.default.createElement(_InputRangeField.default, {
+    const wrapper = mount( /*#__PURE__*/React.createElement(InputRangeField, {
       label: "Input label",
       styles: styles,
       onChange: onChange,
@@ -40,7 +37,7 @@ describe('InputRangeField tests', () => {
     expect(wrapper).toMatchSnapshot();
   });
   test('Should rerender when props change', () => {
-    const wrapper = (0, _enzyme.mount)( /*#__PURE__*/_react.default.createElement(_InputRangeField.default, {
+    const wrapper = mount( /*#__PURE__*/React.createElement(InputRangeField, {
       value: 12,
       placeholder: "Placeholder",
       label: "Input label",
@@ -72,13 +69,13 @@ describe('InputRangeField tests', () => {
     expect(wrapper.find(`.${styles.inputRangeLabel}`).text()).toEqual('Label');
   });
   test('Should render the label as a Component', () => {
-    const Label = () => /*#__PURE__*/_react.default.createElement("span", {
+    const Label = () => /*#__PURE__*/React.createElement("span", {
       className: "input-range-field-label"
     }, "Input label");
-    const wrapper = (0, _enzyme.mount)( /*#__PURE__*/_react.default.createElement(_InputRangeField.default, {
+    const wrapper = mount( /*#__PURE__*/React.createElement(InputRangeField, {
       value: 12,
       placeholder: "Placeholder",
-      label: /*#__PURE__*/_react.default.createElement(Label, null),
+      label: /*#__PURE__*/React.createElement(Label, null),
       styles: styles,
       onChange: jest.fn(),
       onFocus: jest.fn(),

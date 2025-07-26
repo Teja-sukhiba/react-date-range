@@ -9,7 +9,7 @@ module.exports = {
   require: [
     path.join(__dirname, 'dist/styles.css'),
     path.join(__dirname, 'dist/theme/default.css'),
-    path.join(__dirname, 'demo/styles.css')
+    path.join(__dirname, 'demo/styles.css'),
   ],
   template: {
     head: {
@@ -79,7 +79,7 @@ module.exports = {
         },
         {
           test: /\.css$/,
-          use: ["style-loader", "css-loader"],
+          use: ['style-loader', 'css-loader'],
         },
         {
           test: /\.svg$/,

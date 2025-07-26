@@ -16,6 +16,7 @@ class DateRangePicker extends Component {
   }
   render() {
     const { focusedRange } = this.state;
+    console.log('Forked package');
     return (
       <div className={classnames(this.styles.dateRangePickerWrapper, this.props.className)}>
         <DefinedRange

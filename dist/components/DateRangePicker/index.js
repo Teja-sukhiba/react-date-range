@@ -27,6 +27,7 @@ class DateRangePicker extends _react.Component {
     const {
       focusedRange
     } = this.state;
+    console.log('Forked package');
     return /*#__PURE__*/_react.default.createElement("div", {
       className: (0, _classnames.default)(this.styles.dateRangePickerWrapper, this.props.className)
     }, /*#__PURE__*/_react.default.createElement(_DefinedRange.default, _extends({
